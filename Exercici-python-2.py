@@ -51,17 +51,21 @@ def escribir_datos(archivo_salida, cabecera_traducida, datos_traducidos):
         writer.writerows(datos_traducidos)
 
 # Función para obtener estadísticas
-def obtener_estadisticas(datos, cabecera):
-    indice_nombre, indice_peso, indice_altura, indice_posicion, indice_edad = [cabecera.index(columna) for columna in ['Nom', 'Pes', 'Alçada', 'Posició', 'Edat']]
+def obtener_estadisticas(datos, cabecera_traducida):
+    indice_nombre, indice_peso, indice_altura, indice_posicion, indice_edad = [cabecera_traducida.index(columna) for columna in ['Nom', 'Pes', 'Alçada', 'Posició', 'Edat']]
 
+    # Jugador con el peso más alto
     jugador_peso_mas_alto = max(datos, key=lambda x: float(x[indice_peso]))
     nombre_peso_mas_alto, peso_mas_alto = jugador_peso_mas_alto[indice_nombre], float(jugador_peso_mas_alto[indice_peso])
 
+    # Jugador con la altura más pequeña
     jugador_altura_mas_pequena = min(datos, key=lambda x: float(x[indice_altura]))
     nombre_altura_mas_pequena, altura_mas_pequena = jugador_altura_mas_pequena[indice_nombre], float(jugador_altura_mas_pequena[indice_altura])
 
+    # Reinicia las estadísticas de los equipo 
     estadisticas_por_posicion_y_equipo, conteo_posiciones, distribucion_edades = {}, {}, {}
 
+    # Este bucle calcula las estadísticas por posición y equipo, posiciones y la distribución de edades
     for fila in datos:
         posicion, equipo, peso, altura, edad = [fila[indice] for indice in [indice_posicion, indice_nombre, indice_peso, indice_altura, indice_edad]]
 
@@ -69,9 +73,11 @@ def obtener_estadisticas(datos, cabecera):
         if posicion not in estadisticas_por_posicion_y_equipo:
             estadisticas_por_posicion_y_equipo[posicion] = {}
         
+        # Estadísticas por equipo
         if equipo not in estadisticas_por_posicion_y_equipo[posicion]:
             estadisticas_por_posicion_y_equipo[posicion][equipo] = {'peso_total': 0, 'altura_total': 0, 'cantidad_jugadores': 0}
         
+        # Suma de pesos y alturas
         estadisticas_por_posicion_y_equipo[posicion][equipo]['peso_total'] += peso
         estadisticas_por_posicion_y_equipo[posicion][equipo]['altura_total'] += altura
         estadisticas_por_posicion_y_equipo[posicion][equipo]['cantidad_jugadores'] += 1
@@ -82,6 +88,7 @@ def obtener_estadisticas(datos, cabecera):
         # Distribución por edades
         distribucion_edades[edad] = distribucion_edades.get(edad, 0) + 1
 
+    # Cálculo de las medias
     for pos, equipos in estadisticas_por_posicion_y_equipo.items():
         for equipo, stats in equipos.items():
             stats['peso_promedio'] = stats['peso_total'] / stats['cantidad_jugadores']
@@ -153,15 +160,6 @@ def csv_to_json(csv_file, json_file):
     # Escribir los datos en un nuevo archivo JSON con ensure_ascii=False
     with open(json_file, 'w', encoding='utf-8') as archivo:
         json.dump(datos, archivo, indent=2, ensure_ascii=False)
-
-
-
-
-
-
-
-
-
 
 def main():
     # Archivos de entrada y salida
